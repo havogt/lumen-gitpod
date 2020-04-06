@@ -1,1 +1,20 @@
 image: gitpod/workspace-mysql
+
+ports:
+  - port: 8001
+    onOpen: open-preview
+  - port: 3306
+    onOpen: ignore
+
+tasks:
+  - name: lumen
+    init: >
+        composer install
+    command: >
+        cp .env.example .env;
+        source .env;
+        mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE";
+        mysql -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';";
+        mysql -e "GRANT ALL PRIVILEGES ON * . * TO '$DB_USERNAME'@'localhost';";
+        mysqladmin reload;
+        php -S localhost:8001 -t public
